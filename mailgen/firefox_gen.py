@@ -43,8 +43,8 @@ def get_temporary_mail():
             data = user32.GetClipboardData(CF_TEXT)
             data_locked = kernel32.GlobalLock(data)
             text = ctypes.c_char_p(data_locked)
-            kernel32.GlobalUnlock(data_locked)
             value = text.value
+            kernel32.GlobalUnlock(data_locked)
             mails = [
                 "@dropmail.me",
                 "@10mail.org",
@@ -61,12 +61,10 @@ def get_temporary_mail():
                 "@spymail.one",
                 "@10mail.xyz"
             ]
-
             for mail in mails:
-                match = re.search(r'[\w.+-]+@[\w-]+\.[\w.-]+', str(value))
-                print(str(match.group(0)))
-                return str(match.group(0))
-
+                if mail in str(value):
+                    match = re.search(r'[\w.+-]+@[\w-]+\.[\w.-]+', str(value))
+                    return str(match.group(0))
             return False
     finally:
         user32.CloseClipboard()
@@ -116,7 +114,7 @@ def open_browser():
     webbrowser.open('https://google.com')
 
     time.sleep(5)
-    pyautogui.keyDown('ctrlleft'); pyautogui.keyDown('shift'); pyautogui.typewrite('n'); pyautogui.keyUp('ctrlleft'); pyautogui.keyUp('shift')
+    pyautogui.keyDown('ctrlleft'); pyautogui.keyDown('shift'); pyautogui.typewrite('p'); pyautogui.keyUp('ctrlleft'); pyautogui.keyUp('shift')
     pyautogui.typewrite('https://account.proton.me/signup?plan=free\n')
     time.sleep(5)
 
@@ -143,9 +141,6 @@ def open_browser():
     time.sleep(5)
     pyautogui.typewrite('https://dropmail.me/en/\n')
 
-    pyautogui.keyDown('shift');pyautogui.keyDown('down'); pyautogui.keyUp('down'); pyautogui.keyUp('shift')
-    time.sleep(5)
-
     return _username_, _password_
 
 def get_and_paste_mail():
@@ -154,20 +149,31 @@ def get_and_paste_mail():
         if not newMail:
             pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('r'); pyautogui.keyUp('ctrlleft')
             time.sleep(5)
-        pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('a'); pyautogui.keyUp('ctrlleft')
+        pyautogui.typewrite(28 * '\t')
+        pyautogui.keyDown('ctrlleft')
+        pyautogui.keyDown('shiftleft')
+        pyautogui.keyDown('shiftright')
+        pyautogui.press('down')
+        pyautogui.keyUp('shiftleft')
+        pyautogui.keyUp('shiftright')
+        pyautogui.keyUp('ctrlleft')
         pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('c'); pyautogui.keyUp('ctrlleft')
         newMail = get_temporary_mail()
 
         if newMail:
             print("10 min mail: " + newMail)
             break
-    paste_and_check(newMail)
+    paste_and_check()
                 
-def paste_and_check(newMail):
+def paste_and_check():
     pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('\t'); pyautogui.keyUp('ctrlleft')
     time.sleep(1)
-    pyautogui.typewrite(newMail + '\n')
+    pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('v'); pyautogui.keyUp('ctrlleft')
+    pyautogui.press('backspace')
+    pyautogui.typewrite('\n')
+
     time.sleep(5)
+
     pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('\t'); pyautogui.keyUp('ctrlleft')
     time.sleep(1)
 
